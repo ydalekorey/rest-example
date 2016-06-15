@@ -17,6 +17,8 @@ libraryDependencies ++= Seq(
   "junit" % "junit" % "4.12" % Test
 )
 
+unmanagedResourceDirectories in Test <+= baseDirectory( _ / "features" )
+
 resolvers += "scalaz-bintray" at "http://dl.bintray.com/scalaz/releases"
 
 fork in run := false
