@@ -6,7 +6,7 @@ import scala.concurrent.Future
 
 trait ProductsRepository {
   def findByCode(code: String): Future[Option[Product]]
-  def create(product: Product):  Future[Unit]
+  def create(product: Product):  Future[Int]
 }
 
 

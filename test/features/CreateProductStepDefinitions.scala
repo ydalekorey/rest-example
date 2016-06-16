@@ -8,6 +8,9 @@ import play.api.http.Status._
 import play.api.libs.json.Json
 import play.api.libs.ws.WSResponse
 
+import scala.concurrent.Await
+import scala.concurrent.duration.Duration
+
 class CreateProductStepDefinitions extends ScalaDsl with EN with PlaySteps with ShouldMatchers {
 
   private var productToCreate: Product = _
@@ -30,7 +33,7 @@ class CreateProductStepDefinitions extends ScalaDsl with EN with PlaySteps with 
   Then("""^the data has been entered into the database\.$"""){ () =>
     val productsRepository = injector.instanceOf(classOf[ProductsRepository])
 
-    val savedProduct = productsRepository.findByCode(productToCreate.code)
+    val savedProduct = Await.result(productsRepository.findByCode(productToCreate.code), Duration.Inf).get
 
     savedProduct should equal(productToCreate)
   }

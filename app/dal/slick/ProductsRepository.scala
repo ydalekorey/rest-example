@@ -32,6 +32,6 @@ class ProductsRepository @Inject()(dbConfigProvider: DatabaseConfigProvider) ext
 
   def findByCode(code: String): Future[Option[Product]] = db.run(Products.filter(_.code === code).result.headOption)
 
-  def create(product: Product): Future[Unit] = db.run(Products  += product).map(_ => ())
+  def create(product: Product): Future[Int] = db.run(Products  += product)
 
 }
