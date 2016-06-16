@@ -2,7 +2,7 @@ package features
 
 import cucumber.api.scala.{EN, ScalaDsl}
 import dal.ProductsRepository
-import dto.ProductDto
+import dto.{ProductData, ProductData$}
 import models.Product
 import org.scalatest.ShouldMatchers
 import play.api.http.Status._
@@ -14,18 +14,16 @@ import scala.concurrent.duration.Duration
 
 class CreateProductStepDefinitions extends ScalaDsl with EN with PlaySteps with ShouldMatchers {
 
-  private var productToCreate: Product = _
+  private var productData: ProductData = _
 
   private var createResponse: WSResponse = _
 
-  private var productWithWrongPrice: ProductDto = _
-
   Given("""^that I am passing valid (.*) , (.*) and (.+)$""") { (productCode: String, productName: String, price: Double) =>
-    productToCreate = new Product(productCode, productName, price)
+    productData = new ProductData(productCode, productName, price.toString)
   }
 
   When("""^I attempt to add this data to the product catalogue$"""){ () =>
-    createResponse = post("/create", Json.toJson(productToCreate))
+    createResponse = post("/create", Json.toJson(productData))
   }
 
   Then("""^I receive a success message$"""){ () =>
@@ -36,13 +34,13 @@ class CreateProductStepDefinitions extends ScalaDsl with EN with PlaySteps with 
   Then("""^the data has been entered into the database\.$"""){ () =>
     val productsRepository = injector.instanceOf(classOf[ProductsRepository])
 
-    val savedProduct = Await.result(productsRepository.findByCode(productToCreate.code), Duration.Inf).get
+    val savedProduct = Await.result(productsRepository.findByCode(productData.code), Duration.Inf).get
 
-    savedProduct should equal(productToCreate)
+    savedProduct should equal(productData.toProdut())
   }
 
   Given("""^that I am passing valid (.*) and (.*) but invalid (.*)$"""){ (productCode: String, productName: String, price: String) =>
-    productWithWrongPrice = new ProductDto(productCode, productName, price)
+    productData = new ProductData(productCode, productName, price)
   }
   Then("""^I receive an appropriate error response$"""){ () =>
     createResponse.status shouldBe BAD_REQUEST
@@ -52,7 +50,7 @@ class CreateProductStepDefinitions extends ScalaDsl with EN with PlaySteps with 
 
     val productsRepository = injector.instanceOf(classOf[ProductsRepository])
 
-    val savedProduct = Await.result(productsRepository.findByCode(productWithWrongPrice.code), Duration.Inf).get
+    val savedProduct = Await.result(productsRepository.findByCode(productData.code), Duration.Inf).get
 
     savedProduct should be(None)
   }

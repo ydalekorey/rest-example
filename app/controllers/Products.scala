@@ -7,13 +7,22 @@ import models.Product
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import play.api.mvc.{Action, Controller}
 
+import scala.concurrent.Future
+
 @Singleton
 class Products @Inject()(productsRepository: ProductsRepository) extends Controller {
   def create = Action.async(parse.json) { implicit request =>
-    val productToCreate = request.body.as[Product]
-    productsRepository.create(productToCreate).map {_ =>
-      Ok("Product successfully saved")
-    }
+
+    request.body.validate[Product].fold(
+      errors => {
+        Future.successful(BadRequest("Invalid product data"))
+      },
+      product => {
+        productsRepository.create(product).map { _ =>
+          Ok("Product successfully saved")
+        }
+      }
+    )
   }
 
 }
