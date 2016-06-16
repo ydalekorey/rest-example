@@ -20,7 +20,7 @@ class ProductRepositorySpec extends PlaySpec with OneAppPerTest with BeforeAndAf
   def inMemorySlickDatabase(): Map[String, String] = {
     Map(
       "slick.dbs.default.db.driver" -> "org.h2.Driver",
-      "slick.dbs.default.db.url" -> ("jdbc:h2:mem:play-test-" + scala.util.Random.nextInt+";")
+      "slick.dbs.default.db.url" -> ("jdbc:h2:mem:play-test-" + scala.util.Random.nextInt+";DATABASE_TO_UPPER=FALSE")
     )
   }
 
