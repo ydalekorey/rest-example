@@ -1,21 +1,12 @@
 package dal
 
-import javax.inject.Singleton
-
-import com.google.inject.ImplementedBy
 import models.Product
 
-@ImplementedBy(classOf[FakeProductsRepository])
+import scala.concurrent.Future
+
 trait ProductsRepository {
-  def findByCode(code: String): Product
-  def create(product: Product)
-}
-
-@Singleton
-class FakeProductsRepository extends ProductsRepository {
-  override def findByCode(code: String): Product = new Product("FG001", "Red Umbrella", 12.59)
-
-  override def create(product: Product): Unit = {}
+  def findByCode(code: String): Future[Option[Product]]
+  def create(product: Product):  Future[Unit]
 }
 
 

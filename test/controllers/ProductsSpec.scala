@@ -24,6 +24,7 @@ class ProductsSpec extends PlaySpec with Results with MockitoSugar with OneAppPe
 
   before {
     productsRepository = mock[ProductsRepository]
+    when(productsRepository.create(product)).thenReturn(Future.successful())
   }
 
   "Products controller" should {

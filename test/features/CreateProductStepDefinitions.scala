@@ -30,7 +30,7 @@ class CreateProductStepDefinitions extends ScalaDsl with EN with PlaySteps with 
   Then("""^the data has been entered into the database\.$"""){ () =>
     val productsRepository = injector.instanceOf(classOf[ProductsRepository])
 
-    val savedProduct = productsRepository.findByCode(productToCreate.productCode)
+    val savedProduct = productsRepository.findByCode(productToCreate.code)
 
     savedProduct should equal(productToCreate)
   }
