@@ -1,3 +1,5 @@
+package features
+
 import cucumber.api.scala.{EN, ScalaDsl}
 import dal.ProductsRepository
 import models.Product

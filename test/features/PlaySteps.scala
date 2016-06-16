@@ -1,6 +1,8 @@
+package features
+
 import cucumber.api.scala.ScalaDsl
 import play.Application
-import play.api.libs.json.{JsValue, Json, Writes}
+import play.api.libs.json.JsValue
 import play.api.libs.ws.{WSClient, WSResponse}
 import play.inject.Injector
 import play.test.Helpers._
