@@ -1,22 +1,31 @@
 import cucumber.api.scala.ScalaDsl
+import play.Application
 import play.api.libs.ws.WSClient
+import play.inject.Injector
 import play.test.Helpers._
 import play.test.TestServer
 
 trait PlaySteps extends ScalaDsl {
 
-  val app = fakeApplication()
+  var app: Application = _
 
-  val injector = app.injector
+  var injector: Injector = _
 
-  val wsClient = injector.instanceOf(classOf[WSClient])
+  var wsClient: WSClient = _
 
   val port = 9001
 
-  private val server: TestServer = testServer(port, app)
+  private var server: TestServer = _
 
-  Before {
-    scenario => server.start()
+  Before { scenario =>
+    app = fakeApplication()
+
+    injector = app.injector
+
+    wsClient = injector.instanceOf(classOf[WSClient])
+
+    server = testServer(port, app)
+    server.start()
   }
 
   After {
