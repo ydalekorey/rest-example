@@ -41,7 +41,7 @@ trait PlaySteps extends ScalaDsl {
   }
 
   def post(path: String, data: JsValue):WSResponse =  {
-    Await.result(wsClient.url(testServerAddress + path).post(data), Duration.Inf)
+    Await.result(wsClient.url(testServerAddress + path).withHeaders("Content-Type"->"application/json").post(data), Duration.Inf)
   }
 
 }

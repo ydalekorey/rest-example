@@ -2,11 +2,10 @@ package features
 
 import cucumber.api.scala.{EN, ScalaDsl}
 import dal.ProductsRepository
-import dto.{ProductData, ProductData$}
 import models.Product
 import org.scalatest.ShouldMatchers
 import play.api.http.Status._
-import play.api.libs.json.Json
+import play.api.libs.json.{JsValue, Json, Writes}
 import play.api.libs.ws.WSResponse
 
 import scala.concurrent.Await
@@ -14,16 +13,16 @@ import scala.concurrent.duration.Duration
 
 class CreateProductStepDefinitions extends ScalaDsl with EN with PlaySteps with ShouldMatchers {
 
-  private var productData: ProductData = _
+  private var productDataJson: JsValue = _
 
   private var createResponse: WSResponse = _
 
   Given("""^that I am passing valid (.*) , (.*) and (.+)$""") { (productCode: String, productName: String, price: Double) =>
-    productData = new ProductData(productCode, productName, price.toString)
+    productDataJson = toProductDataJson(productCode, productName, price)
   }
 
   When("""^I attempt to add this data to the product catalogue$"""){ () =>
-    createResponse = post("/create", Json.toJson(productData))
+    createResponse = post("/create", productDataJson)
   }
 
   Then("""^I receive a success message$"""){ () =>
@@ -34,13 +33,13 @@ class CreateProductStepDefinitions extends ScalaDsl with EN with PlaySteps with 
   Then("""^the data has been entered into the database\.$"""){ () =>
     val productsRepository = injector.instanceOf(classOf[ProductsRepository])
 
-    val savedProduct = Await.result(productsRepository.findByCode(productData.code), Duration.Inf).get
+    val savedProduct = Await.result(productsRepository.findByCode((productDataJson\"code").as[String]), Duration.Inf).get
 
-    savedProduct should equal(productData.toProdut())
+    savedProduct should equal(productDataJson.as[Product])
   }
 
   Given("""^that I am passing valid (.*) and (.*) but invalid (.*)$"""){ (productCode: String, productName: String, price: String) =>
-    productData = new ProductData(productCode, productName, price)
+    productDataJson = toProductDataJson(productCode, productName, price)
   }
   Then("""^I receive an appropriate error response$"""){ () =>
     createResponse.status shouldBe BAD_REQUEST
@@ -50,9 +49,12 @@ class CreateProductStepDefinitions extends ScalaDsl with EN with PlaySteps with 
 
     val productsRepository = injector.instanceOf(classOf[ProductsRepository])
 
-    val savedProduct = Await.result(productsRepository.findByCode(productData.code), Duration.Inf).get
+    val savedProduct = Await.result(productsRepository.findByCode((productDataJson\"code").as[String]), Duration.Inf)
 
     savedProduct should be(None)
   }
+
+  private def toProductDataJson[P:Writes](productCode:String, productName:String, price: P) =
+    Json.obj("code" -> productCode, "name"->productName, "price"-> price)
 
 }

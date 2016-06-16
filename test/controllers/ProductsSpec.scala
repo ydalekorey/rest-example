@@ -2,11 +2,10 @@ package controllers
 
 import akka.stream.Materializer
 import dal.ProductsRepository
-import dto.ProductData
 import models.Product
 
 import scala.concurrent.Future
-import play.api.libs.json.Json
+import play.api.libs.json.{JsValue, Json}
 import play.api.mvc._
 import play.api.test._
 import play.api.test.Helpers._
@@ -22,9 +21,11 @@ class ProductsSpec extends PlaySpec with Results with MockitoSugar with OneAppPe
 
   private var productsRepository: ProductsRepository = _
 
-  private val validProduct = Product("FG001", "Red Umbrella", 12.59)
+  private val validProductJson = Json.obj("code"->"FG001","name"-> "Red Umbrella", "price"->12.59)
 
-  private val notValidProduct = ProductData("FG001", "Red Umbrella", "12.a59")
+  private val validProduct = validProductJson.as[Product]
+
+  private val notValidProductJson = Json.obj("code"->"FG001","name"-> "Red Umbrella", "price"->"12a.59")
 
   before {
     productsRepository = mock[ProductsRepository]
@@ -36,7 +37,7 @@ class ProductsSpec extends PlaySpec with Results with MockitoSugar with OneAppPe
 
       val controller = new Products(productsRepository)
 
-      val result: Future[Result] = call(controller.create, validRequest)
+      val result: Future[Result] = call(controller.create, fakeRequest(validProductJson))
 
       val bodyText: String = contentAsString(result)
       bodyText mustBe "Product successfully saved"
@@ -48,7 +49,7 @@ class ProductsSpec extends PlaySpec with Results with MockitoSugar with OneAppPe
     "return appropriate status code" in {
       val controller = new Products(productsRepository)
 
-      val result: Future[Result] = call(controller.create, validRequest)
+      val result: Future[Result] = call(controller.create, fakeRequest(validProductJson))
 
       val responseStatus: Int = status(result)
       responseStatus mustBe OK
@@ -60,7 +61,7 @@ class ProductsSpec extends PlaySpec with Results with MockitoSugar with OneAppPe
       "submitted product is not valid" in {
         val controller = new Products(productsRepository)
 
-        val result: Future[Result] = call(controller.create, notValidRequest)
+        val result: Future[Result] = call(controller.create, fakeRequest(notValidProductJson))
 
         val bodyText: String = contentAsString(result)
         bodyText mustBe "Invalid product data"
@@ -72,7 +73,7 @@ class ProductsSpec extends PlaySpec with Results with MockitoSugar with OneAppPe
       "submitted product is not valid" in {
         val controller = new Products(productsRepository)
 
-        val result: Future[Result] = call(controller.create, notValidRequest)
+        val result: Future[Result] = call(controller.create, fakeRequest(notValidProductJson))
 
         val responseStatus: Int = status(result)
         responseStatus mustBe BAD_REQUEST
@@ -83,7 +84,6 @@ class ProductsSpec extends PlaySpec with Results with MockitoSugar with OneAppPe
     }
   }
 
-  private def validRequest = FakeRequest(POST, "/create").withJsonBody(Json.toJson(validProduct))
+  def fakeRequest(productDataJson:JsValue) = FakeRequest(POST, "/create").withJsonBody(productDataJson)
 
-  private def notValidRequest = FakeRequest(POST, "/create").withJsonBody(Json.toJson(notValidProduct))
 }
