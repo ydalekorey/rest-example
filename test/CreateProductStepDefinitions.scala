@@ -6,9 +6,6 @@ import play.api.http.Status._
 import play.api.libs.json.Json
 import play.api.libs.ws.WSResponse
 
-import scala.concurrent.Await
-import scala.concurrent.duration.Duration
-
 class CreateProductStepDefinitions extends ScalaDsl with EN with PlaySteps with ShouldMatchers {
 
   private var productToCreate: Product = _
@@ -20,7 +17,7 @@ class CreateProductStepDefinitions extends ScalaDsl with EN with PlaySteps with 
   }
 
   When("""^I attempt to add this data to the product catalogue$"""){ () =>
-    createResponse = Await.result(wsClient.url("http://localhost:"+ port+ "/create").post(Json.toJson(productToCreate)), Duration.Inf)
+    createResponse = post("/create", Json.toJson(productToCreate))
   }
 
   Then("""^I receive a success message$"""){ () =>

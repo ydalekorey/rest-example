@@ -1,9 +1,13 @@
 import cucumber.api.scala.ScalaDsl
 import play.Application
-import play.api.libs.ws.WSClient
+import play.api.libs.json.{JsValue, Json, Writes}
+import play.api.libs.ws.{WSClient, WSResponse}
 import play.inject.Injector
 import play.test.Helpers._
 import play.test.TestServer
+
+import scala.concurrent.Await
+import scala.concurrent.duration.Duration
 
 trait PlaySteps extends ScalaDsl {
 
@@ -14,6 +18,8 @@ trait PlaySteps extends ScalaDsl {
   var wsClient: WSClient = _
 
   val port = 9001
+
+  val testServerAddress = s"http://localhost:$port"
 
   private var server: TestServer = _
 
@@ -30,6 +36,10 @@ trait PlaySteps extends ScalaDsl {
 
   After {
     scenario => server.stop()
+  }
+
+  def post(path: String, data: JsValue):WSResponse =  {
+    Await.result(wsClient.url(testServerAddress + path).post(data), Duration.Inf)
   }
 
 }
