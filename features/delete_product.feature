@@ -4,7 +4,8 @@ Feature:
 
   Scenario Outline: delete valid product
 
-    Given that I am passing valid <Product Code>
+    Given that a valid product with <Product Code> , <Product Name> and <Price> exists in catalogue
+    And that I am passing valid <Product Code>
     When I attempt to delete the related data in the product catalogue
     Then I receive a success message
     And the data has been deleted in the database
