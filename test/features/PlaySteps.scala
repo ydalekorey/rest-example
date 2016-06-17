@@ -44,4 +44,8 @@ trait PlaySteps extends ScalaDsl {
     Await.result(wsClient.url(testServerAddress + path).post(data), Duration.Inf)
   }
 
+  def delete(path: String):WSResponse =  {
+    Await.result(wsClient.url(testServerAddress + path).delete(), Duration.Inf)
+  }
+
 }
