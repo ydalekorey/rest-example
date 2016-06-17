@@ -22,11 +22,11 @@ class CreateProductStepDefinitions extends ScalaDsl with EN with PlaySteps with 
   }
 
   When("""^I attempt to add this data to the product catalogue$"""){ () =>
-    createResponse = post("/create", productDataJson)
+    createResponse = post("/products", productDataJson)
   }
 
   Then("""^I receive a success message$"""){ () =>
-    createResponse.status shouldBe OK
+    createResponse.status shouldBe CREATED
     createResponse.body shouldBe "Product successfully saved"
   }
 

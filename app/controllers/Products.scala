@@ -19,7 +19,7 @@ class Products @Inject()(productsRepository: ProductsRepository) extends Control
       },
       product => {
         productsRepository.create(product).map { _ =>
-          Ok("Product successfully saved")
+          Created("Product successfully saved")
         }
       }
     )
