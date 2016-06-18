@@ -10,21 +10,13 @@ import play.api.test.FakeApplication
 import scala.concurrent.Await
 import scala.concurrent.duration.Duration
 
+import test.application.DbHelpers._
+
 class ProductRepositorySpec extends PlaySpec with OneAppPerTest with BeforeAndAfter {
 
   var productsRepository: ProductsRepository = _
 
-  /**
-    * Constructs a in-memory (h2) database configuration to add to a FakeApplication.
-    */
-  def inMemorySlickDatabase(): Map[String, String] = {
-    Map(
-      "slick.dbs.default.db.driver" -> "org.h2.Driver",
-      "slick.dbs.default.db.url" -> ("jdbc:h2:mem:play-test-" + scala.util.Random.nextInt+";DATABASE_TO_UPPER=FALSE")
-    )
-  }
-
-  override def newAppForTest(testData: TestData): Application = FakeApplication(additionalConfiguration = inMemorySlickDatabase())
+  override def newAppForTest(testData: TestData): Application = FakeApplication(additionalConfiguration = inMemoryDb())
 
   "ProductsRepository" must {
 
