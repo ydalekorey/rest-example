@@ -17,7 +17,7 @@ object DeleteProductStepDefinitions extends ProductsRepositoryComponent with Sca
     await(productsRepository.create(new Product(productCode, productName, price)))
   }
 
-  Given("""^that I am passing valid (.*)\.$""") { (productCode: String) =>
+  Given("""^that I am passing valid (.*)\ to remove$""") { (productCode: String) =>
     productCodeToRemove = productCode
   }
 
@@ -25,7 +25,7 @@ object DeleteProductStepDefinitions extends ProductsRepositoryComponent with Sca
     createResponse = ProductsRestApi.delete(productCodeToRemove)
   }
 
-  Then("""^I receive a delete succeeded message$"""){ () =>
+  Then("""^I receive a remove success message$"""){ () =>
     createResponse.status shouldBe OK
     createResponse.body shouldBe "Product successfully removed"
   }
