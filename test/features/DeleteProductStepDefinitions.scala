@@ -13,10 +13,6 @@ object DeleteProductStepDefinitions extends ProductsRepositoryComponent with Sca
 
   private var createResponse: WSResponse = _
 
-  Given("""^that a valid product with (.*) , (.*) and (.+) exists in catalogue$"""){ (productCode: String, productName: String, price: Double) =>
-    await(productsRepository.create(new Product(productCode, productName, price)))
-  }
-
   Given("""^that I am passing valid (.*)\ to remove$""") { (productCode: String) =>
     productCodeToRemove = productCode
   }
