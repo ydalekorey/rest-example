@@ -21,6 +21,8 @@ class ProductsSpec extends PlaySpec with Results with MockitoSugar with OneAppPe
 
   private var productsRepository: ProductsRepository = _
 
+  private var controller: Products = _
+
   private val validProductJson = Json.obj("code"->"FG001","name"-> "Red Umbrella", "price"->12.59)
 
   private val validProduct = validProductJson.as[Product]
@@ -29,56 +31,28 @@ class ProductsSpec extends PlaySpec with Results with MockitoSugar with OneAppPe
 
   before {
     productsRepository = mock[ProductsRepository]
+    controller = new Products(productsRepository)
     when(productsRepository.create(validProduct)).thenReturn(Future.successful(1))
-    when(productsRepository.delete(anyString())).thenReturn(Future.successful(1))
+    when(productsRepository.delete(validProduct.code)).thenReturn(Future.successful(1))
     when(productsRepository.findByCode(validProduct.code)).thenReturn(Future.successful(Some(validProduct)))
   }
 
   "Products controller" should {
-    "return appropriate success message" in {
+    "return appropriate success message" when {
+      "valid product is passed to save" in  {
+        val result = await(call(controller.create, FakeRequest().withJsonBody(validProductJson)))
 
-      val controller = new Products(productsRepository)
+        result mustBe Created("Product successfully saved")
 
-      val result: Future[Result] = call(controller.create, FakeRequest().withJsonBody(validProductJson))
-
-      val bodyText: String = contentAsString(result)
-      bodyText mustBe "Product successfully saved"
-
-      verify(productsRepository).create(validProduct)
-
-    }
-
-    "return appropriate status code" in {
-      val controller = new Products(productsRepository)
-
-      val result: Future[Result] = call(controller.create, FakeRequest().withJsonBody(validProductJson))
-
-      val responseStatus: Int = status(result)
-      responseStatus mustBe CREATED
-      verify(productsRepository).create(validProduct)
-
+        verify(productsRepository).create(validProduct)
+      }
     }
 
     "return appropriate error message" when  {
       "submitted product is not valid" in {
-        val controller = new Products(productsRepository)
+        val result = await(call(controller.create, FakeRequest().withJsonBody(notValidProductJson)))
 
-        val result: Future[Result] = call(controller.create, FakeRequest().withJsonBody(notValidProductJson))
-
-        val bodyText: String = contentAsString(result)
-        bodyText mustBe "Invalid product data"
-        verify(productsRepository, never()).create(any(classOf[Product]))
-      }
-    }
-
-    "return appropriate status code" when  {
-      "submitted product is not valid" in {
-        val controller = new Products(productsRepository)
-
-        val result: Future[Result] = call(controller.create, FakeRequest().withJsonBody(notValidProductJson))
-
-        val responseStatus: Int = status(result)
-        responseStatus mustBe BAD_REQUEST
+        result mustBe BadRequest("Invalid product data")
 
         verify(productsRepository, never()).create(any(classOf[Product]))
 
@@ -87,25 +61,9 @@ class ProductsSpec extends PlaySpec with Results with MockitoSugar with OneAppPe
 
     "return delete success message" when {
       "valid product code is passed to delete" in {
-        val controller = new Products(productsRepository)
+        val result = await(controller.delete(validProduct.code).apply(FakeRequest()))
 
-        val result: Future[Result] = controller.delete("PCODE").apply(FakeRequest())
-
-        val bodyText: String = contentAsString(result)
-        bodyText mustBe "Product successfully deleted"
-
-        verify(productsRepository).delete(anyString())
-      }
-    }
-
-    "return delete success status" when {
-      "valid product code is passed to delete" in {
-        val controller = new Products(productsRepository)
-
-        val result: Future[Result] = controller.delete("PCODE").apply(FakeRequest())
-
-        val deleteStatus: Int = status(result)
-        deleteStatus mustBe OK
+        result mustBe Ok("Product successfully deleted")
 
         verify(productsRepository).delete(anyString())
       }
@@ -113,15 +71,9 @@ class ProductsSpec extends PlaySpec with Results with MockitoSugar with OneAppPe
 
     "return needed product" when {
       "valid product code is passed to get product" in {
-        val controller = new Products(productsRepository)
+        val result = await(controller.get(validProduct.code).apply(FakeRequest()))
 
-        val result: Future[Result] = controller.get(validProduct.code).apply(FakeRequest())
-
-        val retrieveStatus: Int = status(result)
-        val productJson = contentAsJson(result)
-
-        retrieveStatus mustBe OK
-        productJson must equal(validProductJson)
+        result mustBe Ok(Json.toJson(validProduct))
 
         verify(productsRepository).findByCode(validProduct.code)
       }
