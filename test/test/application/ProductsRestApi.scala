@@ -25,4 +25,8 @@ object ProductsRestApi {
     await(wsClient.url(productsUrl+"/"+productCode).get())
   }
 
+  def update[T](productCode: String, data: T)(implicit wrt: Writeable[T]): WSResponse = {
+    await(wsClient.url(productsUrl+"/"+productCode).put(data))
+  }
+
 }
