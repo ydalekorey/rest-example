@@ -6,6 +6,7 @@ import play.api.test.Helpers._
 
 object ProductsRestApi {
 
+
   def wsClient: WSClient = PlayApplication.instanceOf[WSClient]
 
   private lazy val port = PlayApplication.port
@@ -18,6 +19,10 @@ object ProductsRestApi {
 
   def delete(productCode: String): WSResponse = {
     await(wsClient.url(productsUrl+"/"+productCode).delete())
+  }
+
+  def get(productCode: String): WSResponse = {
+    await(wsClient.url(productsUrl+"/"+productCode).get())
   }
 
 }
