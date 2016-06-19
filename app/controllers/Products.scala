@@ -38,4 +38,11 @@ class Products @Inject()(productsRepository: ProductsRepository) extends Control
     }
   }
 
+  def update(code: String) = Action.async(parse.json) { implicit request =>
+    val product = request.body.as[Product]
+    productsRepository.update(code, product).map { _ =>
+      Ok("Product successfully updated")
+    }
+  }
+
 }
