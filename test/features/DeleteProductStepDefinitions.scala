@@ -27,10 +27,10 @@ object DeleteProductStepDefinitions extends ProductsRepositoryComponent with Sca
 
   Then("""^I receive a remove success message$"""){ () =>
     createResponse.status shouldBe OK
-    createResponse.body shouldBe "Product successfully removed"
+    createResponse.body shouldBe "Product successfully deleted"
   }
 
-  Then("""^the data has been deleted in the database\.$"""){ () =>
+  Then("""^the data has been deleted in the database$"""){ () =>
     val savedProduct = await(productsRepository.findByCode(productCodeToRemove))
 
     savedProduct should be(None)
