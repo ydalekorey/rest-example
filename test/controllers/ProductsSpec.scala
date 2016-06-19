@@ -31,6 +31,7 @@ class ProductsSpec extends PlaySpec with Results with MockitoSugar with OneAppPe
     productsRepository = mock[ProductsRepository]
     when(productsRepository.create(validProduct)).thenReturn(Future.successful(1))
     when(productsRepository.delete(anyString())).thenReturn(Future.successful(1))
+    when(productsRepository.findByCode(validProduct.code)).thenReturn(Future.successful(Some(validProduct)))
   }
 
   "Products controller" should {
@@ -107,6 +108,22 @@ class ProductsSpec extends PlaySpec with Results with MockitoSugar with OneAppPe
         deleteStatus mustBe OK
 
         verify(productsRepository).delete(anyString())
+      }
+    }
+
+    "return needed product" when {
+      "valid product code is passed to get product" in {
+        val controller = new Products(productsRepository)
+
+        val result: Future[Result] = controller.get(validProduct.code).apply(FakeRequest())
+
+        val retrieveStatus: Int = status(result)
+        val productJson = contentAsJson(result)
+
+        retrieveStatus mustBe OK
+        productJson must equal(validProductJson)
+
+        verify(productsRepository).findByCode(validProduct.code)
       }
     }
   }

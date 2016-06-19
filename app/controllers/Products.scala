@@ -5,6 +5,7 @@ import javax.inject._
 import dal.ProductsRepository
 import models.Product
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
+import play.api.libs.json.Json
 import play.api.mvc.{Action, Controller}
 
 import scala.concurrent.Future
@@ -28,6 +29,12 @@ class Products @Inject()(productsRepository: ProductsRepository) extends Control
   def delete(code: String) = Action.async { implicit request =>
     productsRepository.delete(code).map { _ =>
       Ok("Product successfully deleted")
+    }
+  }
+
+  def get(code: String) = Action.async {
+    productsRepository.findByCode(code).map { product =>
+      Ok(Json.toJson(product))
     }
   }
 
