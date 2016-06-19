@@ -7,7 +7,7 @@ Feature:
     And that I am passing valid <Product Code> to get product
     When I attempt to bring back all related data
     Then I receive a getting success message
-    And the data returned is <Product Name> and <Price>
+    And the data returned is <Product Code>, <Product Name> and <Price>
 
   Examples:
   |Product Code         |Product Name        |Price        |
