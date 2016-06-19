@@ -2,7 +2,6 @@ package features
 
 import test.application.{ProductsRepositoryComponent, ProductsRestApi}
 import cucumber.api.scala.{EN, ScalaDsl}
-import models.Product
 import org.scalatest.ShouldMatchers
 import play.api.libs.ws.WSResponse
 import play.api.test.Helpers._
