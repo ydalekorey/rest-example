@@ -37,7 +37,7 @@ class ProductsSpec extends PlaySpec with Results with MockitoSugar with OneAppPe
 
       val controller = new Products(productsRepository)
 
-      val result: Future[Result] = call(controller.create, fakeRequest(validProductJson))
+      val result: Future[Result] = call(controller.create, FakeRequest().withJsonBody(validProductJson))
 
       val bodyText: String = contentAsString(result)
       bodyText mustBe "Product successfully saved"
@@ -49,10 +49,10 @@ class ProductsSpec extends PlaySpec with Results with MockitoSugar with OneAppPe
     "return appropriate status code" in {
       val controller = new Products(productsRepository)
 
-      val result: Future[Result] = call(controller.create, fakeRequest(validProductJson))
+      val result: Future[Result] = call(controller.create, FakeRequest().withJsonBody(validProductJson))
 
       val responseStatus: Int = status(result)
-      responseStatus mustBe OK
+      responseStatus mustBe CREATED
       verify(productsRepository).create(validProduct)
 
     }
@@ -61,7 +61,7 @@ class ProductsSpec extends PlaySpec with Results with MockitoSugar with OneAppPe
       "submitted product is not valid" in {
         val controller = new Products(productsRepository)
 
-        val result: Future[Result] = call(controller.create, fakeRequest(notValidProductJson))
+        val result: Future[Result] = call(controller.create, FakeRequest().withJsonBody(notValidProductJson))
 
         val bodyText: String = contentAsString(result)
         bodyText mustBe "Invalid product data"
@@ -73,7 +73,7 @@ class ProductsSpec extends PlaySpec with Results with MockitoSugar with OneAppPe
       "submitted product is not valid" in {
         val controller = new Products(productsRepository)
 
-        val result: Future[Result] = call(controller.create, fakeRequest(notValidProductJson))
+        val result: Future[Result] = call(controller.create, FakeRequest().withJsonBody(notValidProductJson))
 
         val responseStatus: Int = status(result)
         responseStatus mustBe BAD_REQUEST
@@ -83,7 +83,5 @@ class ProductsSpec extends PlaySpec with Results with MockitoSugar with OneAppPe
       }
     }
   }
-
-  def fakeRequest(productDataJson:JsValue) = FakeRequest(POST, "/create").withJsonBody(productDataJson)
 
 }
