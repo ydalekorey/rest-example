@@ -5,7 +5,7 @@ import dal.ProductsRepository
 import models.Product
 
 import scala.concurrent.Future
-import play.api.libs.json.{JsValue, Json}
+import play.api.libs.json.Json
 import play.api.mvc._
 import play.api.test._
 import play.api.test.Helpers._
@@ -32,14 +32,13 @@ class ProductsSpec extends PlaySpec with Results with MockitoSugar with OneAppPe
   before {
     productsRepository = mock[ProductsRepository]
     controller = new Products(productsRepository)
-    when(productsRepository.create(validProduct)).thenReturn(Future.successful(1))
-    when(productsRepository.delete(validProduct.code)).thenReturn(Future.successful(1))
-    when(productsRepository.findByCode(validProduct.code)).thenReturn(Future.successful(Some(validProduct)))
+
   }
 
   "Products controller" should {
     "return appropriate success message" when {
       "valid product is passed to save" in  {
+        when(productsRepository.create(validProduct)).thenReturn(Future.successful(1))
         val result = await(call(controller.create, FakeRequest().withJsonBody(validProductJson)))
 
         result mustBe Created("Product successfully saved")
@@ -61,6 +60,7 @@ class ProductsSpec extends PlaySpec with Results with MockitoSugar with OneAppPe
 
     "return delete success message" when {
       "valid product code is passed to delete" in {
+        when(productsRepository.delete(validProduct.code)).thenReturn(Future.successful(1))
         val result = await(controller.delete(validProduct.code).apply(FakeRequest()))
 
         result mustBe Ok("Product successfully deleted")
@@ -71,6 +71,7 @@ class ProductsSpec extends PlaySpec with Results with MockitoSugar with OneAppPe
 
     "return needed product" when {
       "valid product code is passed to get product" in {
+        when(productsRepository.findByCode(validProduct.code)).thenReturn(Future.successful(Some(validProduct)))
         val result = await(controller.get(validProduct.code).apply(FakeRequest()))
 
         result mustBe Ok(Json.toJson(validProduct))
