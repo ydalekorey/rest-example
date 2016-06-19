@@ -43,6 +43,20 @@ class ProductRepositorySpec extends PlaySpec with OneAppPerTest {
       actualProduct should be(None)
     }
 
+    "update Product by by code" in {
+
+      val productToUpdate = Product("FG001", "Red Umbrella", 12.59)
+      val productWithUpdatedPrice = productToUpdate.copy(price = 66.66)
+      Await.result(productsRepository.create(productToUpdate), Duration.Inf)
+
+
+      Await.result(productsRepository.updateByCode(productToUpdate.code, productWithUpdatedPrice), Duration.Inf)
+
+      val actualProduct = Await.result(productsRepository.findByCode(productToUpdate.code), Duration.Inf)
+
+      actualProduct should be(Some(productWithUpdatedPrice))
+    }
+
   }
 
 }

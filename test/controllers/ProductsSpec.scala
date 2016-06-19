@@ -83,13 +83,13 @@ class ProductsSpec extends PlaySpec with Results with MockitoSugar with OneAppPe
   "return update success message" when {
     "product updated with new data" in {
       val productWithUpdatedPrice = validProduct.copy(price = 66.66)
-      when(productsRepository.update(validProduct.code, productWithUpdatedPrice)).thenReturn(Future.successful(1))
+      when(productsRepository.updateByCode(validProduct.code, productWithUpdatedPrice)).thenReturn(Future.successful(1))
 
       val result = await(call(controller.update(validProduct.code), FakeRequest().withJsonBody(Json.toJson(productWithUpdatedPrice))))
 
       result mustBe Ok("Product successfully updated")
 
-      verify(productsRepository).update(validProduct.code, productWithUpdatedPrice)
+      verify(productsRepository).updateByCode(validProduct.code, productWithUpdatedPrice)
     }
   }
 
