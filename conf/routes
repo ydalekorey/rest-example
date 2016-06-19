@@ -1,4 +1,4 @@
-# Save product
+
 POST          /products              controllers.Products.create()
 DELETE        /products/:code        controllers.Products.delete(code)
 GET           /products/:code        controllers.Products.get(code)
