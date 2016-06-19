@@ -33,4 +33,6 @@ class ProductsRepository @Inject()(dbConfigProvider: DatabaseConfigProvider) ext
 
   def create(product: Product): Future[Int] = db.run(Products  += product)
 
+  def delete(code: String): Future[Int] = Future.successful(1)
+
 }

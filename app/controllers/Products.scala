@@ -25,4 +25,10 @@ class Products @Inject()(productsRepository: ProductsRepository) extends Control
     )
   }
 
+  def delete(code: String) = Action.async { implicit request =>
+    productsRepository.delete(code).map { _ =>
+      Ok("Product successfully deleted")
+    }
+  }
+
 }
