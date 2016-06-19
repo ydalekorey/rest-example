@@ -16,16 +16,12 @@ object UpdateProductStepsDefinitions extends ProductsRepositoryComponent with Sc
 
   private var productToUpdate: Product = _
 
-  Given("""^that a valid product with (.*) , (.*) and (.+) exists in catalogue$"""){ (productCode: String, productName: String, price: Double) =>
-    productToUpdate = new Product(productCode, productName, price)
-    await(productsRepository.create(productToUpdate))
-  }
-
-  When("""^I attempt to update this existing data in the product catalogue with a new (.+)$""") { (price: Double) =>
+  When("""^I attempt to update this existing data with (.*) in the product catalogue with a (.+)$""") { (productCode: String, price: Double) =>
+    productToUpdate = await(productsRepository.findByCode(productCode)).get
     priceToUpdate = price
-    updatedProductResponse = ProductsRestApi.update(productToUpdate.code, Json.obj("price"-> price))
+    updatedProductResponse = ProductsRestApi.update(productToUpdate.code, Json.toJson(productToUpdate.copy(price = priceToUpdate)))
   }
-  Then("""^I receive a success message$""") { () =>
+  Then("""^I receive update success message$""") { () =>
     updatedProductResponse.status shouldBe OK
     updatedProductResponse.body shouldBe "Product successfully updated"
   }
