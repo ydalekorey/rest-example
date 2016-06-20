@@ -4,4 +4,4 @@ DELETE        /products/:code        controllers.Products.delete(code)
 GET           /products/:code        controllers.Products.get(code)
 PUT           /products/:code        controllers.Products.update(code)
 
-GET     /api-docs           controllers.ApiHelpController.getResources
+GET           /api-docs              controllers.ApiHelpController.getResources
